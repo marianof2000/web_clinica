@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Clínica</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Frontend conectado a API Node.js</p>
+      <h1>Panel Clínica</h1>
+    </div>
+    <div class="api-status" id="apiStatus">
+      <span class="status-dot"></span>
+      <span>Conectando...</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="toolbar">
+      <div>
+        <label for="apiBaseUrl">URL de la API</label>
+        <input id="apiBaseUrl" type="url" value="http://200.45.133.87:8000">
+      </div>
+      <button id="saveApiUrl" type="button">Aplicar URL</button>
+      <button id="refreshAll" type="button" class="secondary">Actualizar todo</button>
+    </section>
+
+    <section class="tabs" aria-label="Secciones del panel">
+      <button class="tab active" type="button" data-section="pacientes">Pacientes</button>
+      <button class="tab" type="button" data-section="medicos">Médicos</button>
+      <button class="tab" type="button" data-section="turnos">Turnos</button>
+      <button class="tab" type="button" data-section="tratamientos">Tratamientos</button>
+    </section>
+
+    <section class="message" id="message" aria-live="polite"></section>
+
+    <section class="panel active" id="pacientes">
+      <div class="panel-grid">
+        <form class="form-card" data-form="pacientes">
+          <h2>Nuevo paciente</h2>
+          <label>Nombre<input name="nombre" required></label>
+          <label>Apellido<input name="apellido" required></label>
+          <label>Email<input name="email" type="email"></label>
+          <label>Edad<input name="edad" type="number" min="0"></label>
+          <label>Obra social<input name="obra_social"></label>
+          <label>Médico
+            <select name="medicoId" class="medico-select" data-optional="true">
+              <option value="">Sin médico asignado</option>
+            </select>
+          </label>
+          <button type="submit">Crear paciente</button>
+        </form>
+
+        <div class="table-panel">
+          <div class="table-heading">
+            <h2>Pacientes</h2>
+            <button type="button" class="secondary" data-refresh="pacientes">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Edad</th>
+                  <th>Obra social</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="pacientesRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="medicos">
+      <div class="panel-grid">
+        <form class="form-card" data-form="medicos">
+          <h2>Nuevo médico</h2>
+          <label>Nombre<input name="nombre" required></label>
+          <label>Apellido<input name="apellido" required></label>
+          <label>Email<input name="email" type="email"></label>
+          <label>Password<input name="password" type="password" required></label>
+          <label>Especialidad<input name="especialidad"></label>
+          <label>Tiempo trabajando<input name="tiempo_trabajando" type="number" min="0"></label>
+          <button type="submit">Crear médico</button>
+        </form>
+
+        <div class="table-panel">
+          <div class="table-heading">
+            <h2>Médicos</h2>
+            <button type="button" class="secondary" data-refresh="medicos">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Especialidad</th>
+                  <th>Años</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="medicosRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="turnos">
+      <div class="panel-grid">
+        <form class="form-card" data-form="turnos">
+          <h2>Nuevo turno</h2>
+          <label>Paciente
+            <select name="pacienteId" class="paciente-select" required>
+              <option value="">Seleccionar paciente</option>
+            </select>
+          </label>
+          <label>Médico
+            <select name="medicoId" class="medico-select" required>
+              <option value="">Seleccionar médico</option>
+            </select>
+          </label>
+          <label>Fecha<input name="fecha" type="date" required></label>
+          <label>Hora<input name="hora" type="time" required></label>
+          <label>Motivo<input name="motivo"></label>
+          <label>Estado
+            <select name="estado">
+              <option value="">Sin definir</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmado">Confirmado</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="atendido">Atendido</option>
+            </select>
+          </label>
+          <button type="submit">Crear turno</button>
+        </form>
+
+        <div class="table-panel">
+          <div class="table-heading">
+            <h2>Turnos</h2>
+            <button type="button" class="secondary" data-refresh="turnos">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Paciente</th>
+                  <th>Médico</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="turnosRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="tratamientos">
+      <div class="panel-grid">
+        <form class="form-card" data-form="tratamientos">
+          <h2>Nuevo tratamiento</h2>
+          <label>Nombre<input name="nombre" required></label>
+          <label>Descripción<textarea name="descripcion" rows="4"></textarea></label>
+          <label>Paciente
+            <select name="pacienteId" class="paciente-select" required>
+              <option value="">Seleccionar paciente</option>
+            </select>
+          </label>
+          <label>Médico
+            <select name="medicoId" class="medico-select" required>
+              <option value="">Seleccionar médico</option>
+            </select>
+          </label>
+          <button type="submit">Crear tratamiento</button>
+        </form>
+
+        <div class="table-panel">
+          <div class="table-heading">
+            <h2>Tratamientos</h2>
+            <button type="button" class="secondary" data-refresh="tratamientos">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Paciente</th>
+                  <th>Médico</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tratamientosRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="modal" id="turnoDialog">
+    <form class="modal-content" id="turnoEditForm">
+      <div class="modal-heading">
+        <div>
+          <p class="eyebrow">Turno</p>
+          <h2 id="turnoDialogTitle">Ver turno</h2>
+        </div>
+        <button type="button" class="icon-button" id="closeTurnoDialog" aria-label="Cerrar">×</button>
+      </div>
+
+      <input type="hidden" name="id" id="turnoId">
+
+      <div class="detail-grid" id="turnoDetails"></div>
+
+      <div class="edit-grid" id="turnoEditFields">
+        <label>Paciente
+          <select name="pacienteId" id="editPacienteId" class="paciente-select" required>
+            <option value="">Seleccionar paciente</option>
+          </select>
+        </label>
+        <label>Médico
+          <select name="medicoId" id="editMedicoId" class="medico-select" required>
+            <option value="">Seleccionar médico</option>
+          </select>
+        </label>
+        <label>Fecha<input name="fecha" id="editFecha" type="date" required></label>
+        <label>Hora<input name="hora" id="editHora" type="time" required></label>
+        <label>Motivo<input name="motivo" id="editMotivo"></label>
+        <label>Estado
+          <select name="estado" id="editEstado">
+            <option value="">Sin definir</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="confirmado">Confirmado</option>
+            <option value="cancelado">Cancelado</option>
+            <option value="atendido">Atendido</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" id="cancelTurnoDialog">Cerrar</button>
+        <button type="submit" id="saveTurnoEdit">Guardar cambios</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
