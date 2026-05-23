@@ -1,4 +1,5 @@
-const DEFAULT_API_BASE_URL = 'http://200.45.133.87:8000';
+/*const DEFAULT_API_BASE_URL = 'http://200.45.133.87:8000';*/
+const DEFAULT_API_BASE_URL = 'http://api.prog1.com.ar';
 const storageKey = 'clinicaApiBaseUrl';
 
 const state = {
